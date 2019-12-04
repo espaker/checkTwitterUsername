@@ -23,7 +23,6 @@
 # - Desenvolvido por Espaker Kaminski #
 #######################################
 
-#'https://twitter.com/users/username_available?username={}'
 
 import requests
 import os
@@ -39,18 +38,31 @@ from Classes.Parser import Parser
 from Classes.Mail import Mail
 from Classes.Utils import Utils
 from Classes.Telegram import Telegram
+from Classes.Twitter import Twitter
 
 app_version = '1.0.1'
 
 
-def getUpdates():
-    print('state')
-    lastState: None
-    # state = Telegram.updater()
-    # print(state)
-    # lastState = Telegram.updater()
-    time.sleep(15)
-    getUpdates()
+def getUpdates(telegram):
+    try:
+        lastState = None
+        while True:
+            state = telegram.updater()
+            if state != lastState:
+                print(state)
+            lastState = state
+            time.sleep(15)
+
+def getUsernamesStatus(twitter):
+    try:
+        while True:
+            usernames = ['espaker', 'leonardson', 'espaker101']
+            for username in usernames:
+                status = twitter.usernameCheckAvailability(username)
+                if status.get('valid'):
+                    print(status)
+            time.sleep(300)
+
 
 def initiate():
     log_main.info('Iniciando a checkTwitterUsername versão: {}'.format(app_version))
@@ -68,10 +80,17 @@ def initiate():
             print('ERRO | Parâmetro desconhecido: {}'.format(sys.argv))
             sys.exit(2)
     else:
-        # Iniciando thread de updates do telegram
-        tlg = threading.Thread(target=getUpdates)
+        # Instanciando e iniciando thread de updates do telegram
+        telegram = Telegram()
+        tlg = threading.Thread(target=getUpdates, args=(telegram,))
         tlg.start()
-        while tlg.isAlive:
+
+        # Instanciando e iniciando thread de checagem do twitter
+        twitter = Twitter()
+        tt = threading.Thread(target=getUsernamesStatus, args=(twitter,))
+        tt.start()
+
+        while True:
             print('Rodando')
             time.sleep(5)
         sys.exit(1)

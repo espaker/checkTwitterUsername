@@ -1,13 +1,13 @@
 import requests
 
 
-class Telegram:
+class Twitter:
 
     def __init__(self):
-        self.botURL = 'https://api.telegram.org/bot914434782:AAFe0JjM6SQJBy21-2E9LdbKlV1kc2STMg8/'
+        self.URL = 'https://twitter.com/users/username_available'
 
-    def updater(self):
-        URL = '{}getUpdates'.format(self.botURL)
+    def usernameCheckAvailability(self, username):
+        URL = '{}?username={}'.format(self.URL, username)
         headers = {'content-type': 'application/json', 'Accept': 'application/json'}
         try:
             r = requests.get(URL, headers=headers, timeout=60)
@@ -15,7 +15,7 @@ class Telegram:
                 rjson = r.json()
                 return rjson
             else:
-                print('Não foi possível consultar o status: {}'.format(r.status_code))
+                print('Não foi possível consultar o username: {}'.format(r.status_code))
         except requests.RequestException as err:
             print(err)
         except Exception as err:
